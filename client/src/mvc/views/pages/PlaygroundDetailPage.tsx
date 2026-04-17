@@ -44,7 +44,6 @@ export function PlaygroundDetailPage() {
           AMBADI TRRIKAALA
         </Link>
         <div className="nav-links">
-          <Link to="/#work">WORK</Link>
           <Link to="/#playground">PLAYGROUND</Link>
           <Link to="/#about">ABOUT</Link>
         </div>

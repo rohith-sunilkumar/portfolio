@@ -222,7 +222,6 @@ export function HomePage() {
       <nav>
         <a href="#hero" className="nav-logo">AMBADI TRRIKAALA</a>
         <div className="nav-links">
-          <a href="#work">WORK</a>
           <a href="#playground">PLAYGROUND</a>
           <a href="#about">ABOUT</a>
         </div>
