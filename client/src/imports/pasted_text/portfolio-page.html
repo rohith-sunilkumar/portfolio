@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radilson Gomes — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --text: #f0ece3;
+    --accent: #e8e0d0;
+    --muted: #555;
+    --border: #222;
+    --red: #c0392b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--text);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-follower {
+    position: fixed;
+    width: 40px; height: 40px;
+    border: 1px solid rgba(240,236,227,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+    transform: translate(-50%, -50%);
+  }
+  a:hover ~ .cursor, button:hover ~ .cursor { transform: translate(-50%, -50%) scale(2); }
+
+  /* LOADER */
+  #loader {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+    transition: opacity 0.8s ease, visibility 0.8s;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; }
+  .loader-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 12vw, 180px);
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    overflow: hidden;
+  }
+  .loader-text span {
+    display: block;
+    transform: translateY(110%);
+    animation: slideUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .loader-text span:nth-child(2) { animation-delay: 0.1s; }
+  .loader-bar {
+    width: 200px; height: 1px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .loader-bar::after {
+    content: '';
+    position: absolute;
+    left: -100%; top: 0;
+    width: 100%; height: 100%;
+    background: var(--text);
+    animation: loadBar 1.5s ease forwards;
+  }
+  @keyframes loadBar { to { left: 0; } }
+  @keyframes slideUp { to { transform: translateY(0); } }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 24px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 12px 24px;
+    opacity: 0;
+    animation: fadeInDown 0.8s ease 1.8s forwards;
+  }
+  @keyframes fadeInDown { from { opacity:0; transform: translateX(-50%) translateY(-20px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 100px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { background: var(--border); color: var(--text); }
+
+  /* MARQUEE TICKET */
+  .marquee-wrap {
+    width: 100%;
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 0;
+    background: var(--bg);
+  }
+  .marquee-track {
+    display: flex;
+    gap: 0;
+    width: max-content;
+    animation: marqueeScroll 20s linear infinite;
+  }
+  .marquee-track.reverse { animation-direction: reverse; }
+  .marquee-item {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 0 24px;
+    white-space: nowrap;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .marquee-item .dot { width: 4px; height: 4px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+  @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(120px, 22vw, 320px);
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.04);
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: -0.03em;
+    user-select: none;
+  }
+  .hero-tag {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 2s forwards;
+  }
+  .hero-hi {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: clamp(60px, 10vw, 140px);
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    overflow: hidden;
+  }
+  .hero-hi span {
+    display: block;
+    transform: translateY(110%);
+    animation: slideUp 0.9s cubic-bezier(0.16,1,0.3,1) 2.1s forwards;
+  }
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 10vw, 140px);
+    line-height: 0.85;
+    letter-spacing: -0.01em;
+    overflow: hidden;
+  }
+  .hero-name span {
+    display: block;
+    transform: translateY(110%);
+    animation: slideUp 0.9s cubic-bezier(0.16,1,0.3,1) 2.25s forwards;
+  }
+  .hero-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 2.4s forwards;
+  }
+  .hero-role {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .scroll-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .scroll-cta:hover { color: var(--text); }
+  .scroll-arrow {
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    background: #27ae60;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  /* SECTION BASE */
+  section { padding: 120px 48px; }
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 14vw, 180px);
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    margin-bottom: 80px;
+  }
+
+  /* INTRO */
+  #intro {
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .intro-big {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 4vw, 56px);
+    line-height: 1.1;
+    font-weight: 400;
+  }
+  .intro-big em { font-style: italic; color: var(--muted); }
+  .intro-right p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: rgba(240,236,227,0.7);
+    margin-bottom: 24px;
+  }
+  .intro-right a { color: var(--text); }
+
+  /* LOGOS SCROLL */
+  .logos-strip {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    overflow: hidden;
+  }
+  .logos-track {
+    display: flex;
+    gap: 60px;
+    width: max-content;
+    animation: marqueeScroll 25s linear infinite;
+    align-items: center;
+  }
+  .logo-placeholder {
+    width: 80px; height: 30px;
+    background: var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+
+  /* WORK */
+  #work { border-top: 1px solid var(--border); }
+  .work-grid { display: flex; flex-direction: column; gap: 2px; }
+  .work-card {
+    display: grid;
+    grid-template-columns: 120px 1fr 200px;
+    align-items: center;
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+    gap: 40px;
+    text-decoration: none;
+    color: var(--text);
+    cursor: none;
+    transition: padding-left 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .work-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: var(--text);
+    transition: width 0.4s ease;
+  }
+  .work-card:hover { padding-left: 16px; }
+  .work-card:hover::after { width: 100%; }
+  .work-year { font-size: 12px; color: var(--muted); letter-spacing: 0.1em; }
+  .work-title { font-family: 'DM Serif Display', serif; font-size: clamp(24px, 3vw, 42px); line-height: 1.1; }
+  .work-subtitle { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .work-tag {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 6px 16px;
+    border-radius: 100px;
+    justify-self: end;
+    transition: background 0.2s, color 0.2s;
+  }
+  .work-card:hover .work-tag { background: var(--text); color: var(--bg); }
+
+  /* HOVER IMAGE */
+  .hover-img-wrap {
+    position: fixed;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    width: 280px;
+    aspect-ratio: 4/3;
+    border-radius: 8px;
+    overflow: hidden;
+    transform: translate(-50%, -60%) rotate(-3deg);
+  }
+  .hover-img-wrap.active { opacity: 1; }
+  .hover-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* PLAYGROUND */
+  #playground {
+    border-top: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .play-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 0;
+  }
+  .play-card {
+    aspect-ratio: 3/4;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .play-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), filter 0.4s ease;
+    filter: grayscale(20%);
+  }
+  .play-card:hover img { transform: scale(1.08); filter: grayscale(0%); }
+  .play-card-info {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 24px 20px 20px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .play-card:hover .play-card-info { transform: translateY(0); }
+  .play-card-title { font-size: 15px; font-weight: 500; }
+  .play-card-type { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+
+  /* ABOUT */
+  #about {
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+  }
+  .about-left {}
+  .about-bio {
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(240,236,227,0.7);
+    margin-top: 32px;
+  }
+  .about-bio p { margin-bottom: 16px; }
+  .about-bio a { color: var(--text); }
+  .about-links { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+  .about-link {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 100px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .about-link:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .about-right {}
+  .exp-list { margin-top: 32px; }
+  .exp-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .exp-years { font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .exp-role { font-size: 15px; font-weight: 500; }
+  .exp-company { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .exp-company a { color: var(--muted); text-decoration: none; }
+  .exp-company a:hover { color: var(--text); }
+
+  /* TOOLS */
+  .tools-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 32px;
+  }
+  .tool-tag {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 100px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .tool-tag:hover { background: var(--border); color: var(--text); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 80px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .footer-bg {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 20vw, 280px);
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.05);
+    letter-spacing: -0.02em;
+    line-height: 0.85;
+    user-select: none;
+    pointer-events: none;
+  }
+  .footer-content {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 60px;
+  }
+  .footer-tagline {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: clamp(16px, 2vw, 24px);
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .footer-link {
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--text); }
+  .footer-copy {
+    margin-top: 48px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.08em;
+  }
+
+  /* REVEAL ANIMATIONS */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  /* MEDIA */
+  @media (max-width: 900px) {
+    #intro, #about { grid-template-columns: 1fr; gap: 48px; }
+    .play-grid { grid-template-columns: repeat(2, 1fr); }
+    .work-card { grid-template-columns: 80px 1fr; }
+    .work-tag { display: none; }
+    section { padding: 80px 24px; }
+    #hero { padding: 0 24px 60px; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-text">
+    <span>RAD.</span>
+  </div>
+  <div class="loader-bar"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">RAD.</a>
+  <div class="nav-links">
+    <a href="#work">01 Work</a>
+    <a href="#playground">02 Playground</a>
+    <a href="#about">03 About</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-text">RADILSON</div>
+  <div class="hero-tag">Portfolio 2024 · Product Designer</div>
+  <div class="hero-hi"><span>Hi</span></div>
+  <div class="hero-name"><span>there.</span></div>
+  <div class="hero-bottom">
+    <div>
+      <div class="hero-role">Radilson Gomes · Product Designer</div>
+      <div class="status-bar" style="margin-top:8px;">
+        <div class="status-dot"></div>
+        <span>Brasília, Brazil · Freelance Available</span>
+      </div>
+    </div>
+    <a href="#intro" class="scroll-cta">
+      Scroll
+      <div class="scroll-arrow">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1v12M1 7l6 6 6-6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- MARQUEE 1 -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee1"></div>
+</div>
+
+<!-- INTRO -->
+<section id="intro">
+  <div class="reveal">
+    <p class="intro-big">
+      Brazilian<br>
+      Product Designer<br>
+      <em>dedicated to</em><br>
+      the craft of<br>
+      creating <strong>0→1</strong><br>
+      experiences.
+    </p>
+  </div>
+  <div class="reveal reveal-delay-2">
+    <p style="font-size:13px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:24px;">About</p>
+    <p style="font-size:16px;line-height:1.7;color:rgba(240,236,227,0.7);">
+      Brazilian Product Designer dedicated to the craft of creating 0→1 digital experiences till the last detail.
+    </p>
+    <p style="font-size:16px;line-height:1.7;color:rgba(240,236,227,0.7);margin-top:16px;">
+      I've helped multiple companies deliver high-quality design. Currently founding design at <a href="https://basistheory.com" style="color:var(--text)">Basis Theory</a>.
+    </p>
+  </div>
+</section>
+
+<!-- LOGOS STRIP -->
+<div class="logos-strip">
+  <div class="logos-track" id="logosTrack"></div>
+</div>
+
+<!-- MARQUEE 2 -->
+<div class="marquee-wrap">
+  <div class="marquee-track reverse" id="marquee2"></div>
+</div>
+
+<!-- WORK -->
+<section id="work">
+  <div class="section-num reveal">SELECT — IF YOU LOVE READING CASE STUDIES ✦</div>
+  <div class="section-label reveal reveal-delay-1">WORK</div>
+  <div class="work-grid">
+    <a class="work-card reveal" href="#" 
+       data-img="https://framerusercontent.com/images/9yMg5aksqMlOoOxw9YmvFt1MsM.png">
+      <div class="work-year">2021</div>
+      <div>
+        <div class="work-title">Starbucks Farm</div>
+        <div class="work-subtitle">Virtual Experience</div>
+      </div>
+      <div class="work-tag">Case Study</div>
+    </a>
+    <a class="work-card reveal reveal-delay-1" href="#"
+       data-img="https://framerusercontent.com/images/UvXe4tnzx8eCDxfk2dnQZt82FFs.png">
+      <div class="work-year">2023</div>
+      <div>
+        <div class="work-title">Basis Theory</div>
+        <div class="work-subtitle">Tokenization Platform for Developers</div>
+      </div>
+      <div class="work-tag">Case Study</div>
+    </a>
+    <a class="work-card reveal reveal-delay-2" href="#"
+       data-img="https://framerusercontent.com/images/WFcyMzIpKFXJ7i7opL0S8JsQAI.png">
+      <div class="work-year">2020</div>
+      <div>
+        <div class="work-title">NoBolso</div>
+        <div class="work-subtitle">Boosting Sales for Local Retailers</div>
+      </div>
+      <div class="work-tag">Case Study</div>
+    </a>
+  </div>
+</section>
+
+<!-- HOVER IMAGE (follows cursor on work cards) -->
+<div class="hover-img-wrap" id="hoverImg">
+  <img src="" alt="" id="hoverImgEl">
+</div>
+
+<!-- PLAYGROUND -->
+<section id="playground">
+  <div class="section-num reveal">PLAY — IF YOU JUST LIKE COOL STUFF ✦</div>
+  <div class="section-label reveal reveal-delay-1">PLAYGROUND</div>
+  <div class="play-grid" id="playGrid"></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-left reveal">
+    <div class="section-num">03 — ABOUT ME</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,7vw,100px);line-height:0.85;letter-spacing:-0.02em;margin-top:16px;">
+      ABOUT<br><em style="font-family:'DM Serif Display',serif;font-style:italic;font-size:0.9em;">Me</em>
+    </div>
+    <div class="about-bio">
+      <p>Product Designer with 13 years of experience, focused on creating functional and user-centered digital products with visually stunning designs.</p>
+      <p>Growing up in Brasília, the modernist architectural capital of Brazil, my home was a fusion of creativity and analytical thinking — influenced by my father's photography and my mother's legal career.</p>
+      <p>My fascination with technology began at age four. Although I pursued Computer Science, my true passion lies in the transformative power of great design craft.</p>
+    </div>
+    <div class="about-links">
+      <a class="about-link" href="mailto:radilson@hey.com">Email</a>
+      <a class="about-link" href="https://linkedin.com/in/radilson" target="_blank">LinkedIn</a>
+      <a class="about-link" href="https://dribbble.com/radilson" target="_blank">Dribbble</a>
+      <a class="about-link" href="https://twitter.com/radilson" target="_blank">Twitter</a>
+    </div>
+    <div style="margin-top:48px;">
+      <p style="font-size:12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:16px;">Tool Stack</p>
+      <div class="tools-grid">
+        <span class="tool-tag">Figma</span>
+        <span class="tool-tag">Framer</span>
+        <span class="tool-tag">Webflow</span>
+        <span class="tool-tag">Photoshop</span>
+        <span class="tool-tag">Spline</span>
+        <span class="tool-tag">Notion</span>
+        <span class="tool-tag">Miro</span>
+        <span class="tool-tag">Linear</span>
+        <span class="tool-tag">Loom</span>
+        <span class="tool-tag">ChatGPT</span>
+        <span class="tool-tag">Arc Browser</span>
+        <span class="tool-tag">Spotify</span>
+      </div>
+    </div>
+  </div>
+  <div class="about-right reveal reveal-delay-2">
+    <p style="font-size:12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0;">Experience</p>
+    <div class="exp-list">
+      <div class="exp-item">
+        <div class="exp-years">2021 — Now</div>
+        <div>
+          <div class="exp-role">Founding Product Designer</div>
+          <div class="exp-company"><a href="https://basistheory.com" target="_blank">Basis Theory</a> · Remote</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-years">2022 — Now</div>
+        <div>
+          <div class="exp-role">Freelance Product Designer</div>
+          <div class="exp-company"><a href="https://toptal.com" target="_blank">Toptal</a> · Remote</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-years">2020 — 2021</div>
+        <div>
+          <div class="exp-role">Principal Product Designer</div>
+          <div class="exp-company"><a href="https://avenuecode.design" target="_blank">Avenue Code</a> · Remote</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-years">2015 — 2020</div>
+        <div>
+          <div class="exp-role">Design Lead — Design Director</div>
+          <div class="exp-company">Zello Tech</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-years">2013 — 2014</div>
+        <div>
+          <div class="exp-role">UI/UX Designer</div>
+          <div class="exp-company">Xys Interatividade</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-years">2011 — 2013</div>
+        <div>
+          <div class="exp-role">Front-end Developer</div>
+          <div class="exp-company">Novacia Tech</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:48px;">
+      <p style="font-size:12px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:24px;">Education</p>
+      <div class="exp-item">
+        <div class="exp-years">2008 — 2011</div>
+        <div>
+          <div class="exp-role">Computer Science Major</div>
+          <div class="exp-company">UniCEUB</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-years">2012 — 2013</div>
+        <div>
+          <div class="exp-role">MBA — Digital Marketing</div>
+          <div class="exp-company">IESB</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-years">2020</div>
+        <div>
+          <div class="exp-role">UX Design Bootcamp</div>
+          <div class="exp-company">Design Circuit</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-content reveal">
+    <div class="footer-tagline">BET YOU ARE AN AWESOME PERSON ✦</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(60px,14vw,200px);letter-spacing:-0.02em;line-height:0.85;margin-bottom:40px;">
+      THANK<br>YOU
+    </div>
+    <div class="footer-links">
+      <a class="footer-link" href="mailto:radilson@hey.com">Email</a>
+      <a class="footer-link" href="https://linkedin.com/in/radilson" target="_blank">LinkedIn</a>
+      <a class="footer-link" href="https://dribbble.com/radilson" target="_blank">Dribbble</a>
+      <a class="footer-link" href="https://twitter.com/radilson" target="_blank">Twitter</a>
+    </div>
+  </div>
+  <div class="footer-copy">© 2024 · Radilson Gomes · All Rights Reserved · Created in Brasília</div>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const follower = document.getElementById('cursorFollower');
+  let fx = 0, fy = 0, cx = 0, cy = 0;
+  document.addEventListener('mousemove', e => {
+    cx = e.clientX; cy = e.clientY;
+    cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px';
+  });
+  function animFollower() {
+    fx += (cx - fx) * 0.12;
+    fy += (cy - fy) * 0.12;
+    follower.style.left = fx + 'px'; follower.style.top = fy + 'px';
+    requestAnimationFrame(animFollower);
+  }
+  animFollower();
+
+  // LOADER
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 1800);
+
+  // MARQUEE content
+  const marqueeItems = ['RADILSON GOMES', 'PRODUCT DESIGNER', 'BRASÍLIA, BRAZIL', 'SINCE 2011', 'DETAIL ORIENTED', '0→1 EXPERIENCES'];
+  function buildMarquee(id, items) {
+    const el = document.getElementById(id);
+    // duplicate 4x for seamless loop
+    for (let r = 0; r < 4; r++) {
+      items.forEach(txt => {
+        const div = document.createElement('div');
+        div.className = 'marquee-item';
+        div.innerHTML = `<span class="dot"></span><span>${txt}</span>`;
+        el.appendChild(div);
+      });
+    }
+  }
+  buildMarquee('marquee1', marqueeItems);
+  buildMarquee('marquee2', [...marqueeItems].reverse());
+
+  // LOGOS
+  const logoNames = ['Starbucks', 'Basis Theory', 'NoBolso', 'Kapa.ai', 'Avenue Code', 'Toptal'];
+  const lt = document.getElementById('logosTrack');
+  for (let r = 0; r < 3; r++) {
+    logoNames.forEach(n => {
+      const d = document.createElement('div');
+      d.className = 'logo-placeholder';
+      d.style.cssText = 'display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:0.1em;color:#444;text-transform:uppercase;width:auto;padding:8px 24px;';
+      d.textContent = n;
+      lt.appendChild(d);
+    });
+  }
+
+  // PLAYGROUND
+  const projects = [
+    { title: 'Kapa.ai', type: 'Webdesign', img: 'https://framerusercontent.com/images/yh0puK2Zxw0g92WF1wUYtBRNAM.png' },
+    { title: 'Mobile Banking Suite', type: 'Mobile', img: 'https://framerusercontent.com/images/85LUFbGuvl9k4m93Zontzc0jIg.png' },
+    { title: "Brazil's Covid-19 App", type: 'Mobile', img: 'https://framerusercontent.com/images/cdtpYVxDWBM3cCUvL8OwRQgnMk.png' },
+    { title: 'Event Ticketing App', type: 'Web App', img: 'https://framerusercontent.com/images/kkDQtalYGtHEGhoKOvwyKX0kG8.png' },
+    { title: "Rio's Botanical Garden", type: 'Mobile', img: 'https://framerusercontent.com/images/moXoUkNhiv53CvzBMzNJ5HCqiLY.png' },
+    { title: 'Hobz Bread Delivery', type: 'Mobile', img: 'https://framerusercontent.com/images/bB4Z6mghycZWzltmSKJFBlxc7E.png' },
+    { title: 'SendSecure.ly', type: 'Web App', img: 'https://framerusercontent.com/images/DUblPsmrhyCwCrZT1iKZEyVFxNY.png' },
+    { title: 'Shopping App Concept', type: 'Mobile', img: 'https://framerusercontent.com/images/JqT78gI38Vy6ikyxWOORBuhHU.png' },
+  ];
+  const grid = document.getElementById('playGrid');
+  projects.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'play-card reveal';
+    card.style.transitionDelay = (i * 0.06) + 's';
+    card.innerHTML = `
+      <img src="${p.img}" alt="${p.title}" loading="lazy">
+      <div class="play-card-info">
+        <div class="play-card-title">${p.title}</div>
+        <div class="play-card-type">${p.type}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  // WORK CARD HOVER IMAGE
+  const hoverWrap = document.getElementById('hoverImg');
+  const hoverImgEl = document.getElementById('hoverImgEl');
+  const workCards = document.querySelectorAll('.work-card[data-img]');
+  workCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      hoverImgEl.src = card.dataset.img;
+      hoverWrap.classList.add('active');
+    });
+    card.addEventListener('mouseleave', () => {
+      hoverWrap.classList.remove('active');
+    });
+  });
+  document.addEventListener('mousemove', e => {
+    hoverWrap.style.left = e.clientX + 'px';
+    hoverWrap.style.top = e.clientY + 'px';
+  });
+
+  // SCROLL REVEAL
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+
+  // LIVE TIME
+  function updateTime() {
+    const d = new Date();
+    const t = d.toLocaleTimeString('en-US', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', hour12: false });
+    const els = document.querySelectorAll('.live-time');
+    els.forEach(el => el.textContent = t + ' BRT');
+  }
+  updateTime();
+  setInterval(updateTime, 30000);
+
+  // PARALLAX hero bg text
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const bgText = document.querySelector('.hero-bg-text');
+    if (bgText) bgText.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.3}px))`;
+  });
+</script>
+</body>
+</html>
